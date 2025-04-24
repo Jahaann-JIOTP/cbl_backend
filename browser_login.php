@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 
 // Database connection
-$host = "localhost";
+$host = "65.0.16.20";
 $dbname = "gcl";
 $dbuser = "root";
 $dbpassword = "";

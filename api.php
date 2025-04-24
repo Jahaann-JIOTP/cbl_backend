@@ -1,7 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Allow requests from your frontend's origin
+header("Access-Control-Allow-Origin: http://65.0.16.20:3000"); // Allow requests from your frontend's origin
 header("Access-Control-Allow-Methods: POST, OPTIONS"); // Allow POST and preflight OPTIONS
 header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow required headers
 

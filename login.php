@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 header("Content-Type: application/json");
 
 // Database connection
-$host = "15.206.128.214";
+$host = "65.0.16.20";
 $dbname = "gcl";
 $dbuser = "jahaann";
 $dbpassword = "Jahaann#321";

@@ -44,7 +44,7 @@ if (!$url_data) {
 }
 
 // Database connection
-$con = mysqli_connect("15.206.128.214", "jahaann", "Jahaann#321", "cbl_alarms");
+$con = mysqli_connect("65.0.16.20", "root", "", "cbl");
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }
@@ -111,9 +111,9 @@ if ($meter_result) {
 
 // Define alarm conditions dynamically
 $alarm_conditions = [
-    'Low Voltage' => function($db_value, $url_value) { return $url_value <= $db_value; },     
-    'High Voltage' => function($db_value, $url_value) { return $url_value >= $db_value; },
-    'High Current' => function($db_value, $url_value) { return $url_value >= $db_value; },
+    'Low Voltage' => function($db_value, $url_value) { return $db_value <= $url_value; },
+    'High Voltage' => function($db_value, $url_value) { return $db_value >= $url_value; },
+    'High Current' => function($db_value, $url_value) { return $db_value >= $url_value; },
 ];
 
 // Process alarms

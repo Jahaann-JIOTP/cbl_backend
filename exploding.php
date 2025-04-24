@@ -336,9 +336,9 @@ function fetchData($start_date, $end_date)
                 ["name" => "Atlas Copco", "value" => $U_4],
                 ["name" => "Compressor Aux", "value" => $U_5],
                 ["name" => "Ganzair Compressor", "value" => $U_6],
-                ["name" => "New Centac Comp#2", "value" => $U_7],
+                ["name" => "New Centac Comp#2", "value" => $U_9],
                 ["name" => "ML-132", "value" => $U_8],
-                ["name" => "New Centac Comp#1", "value" => $U_9],
+                ["name" => "New Centac Comp#1", "value" => $U_7],
                 ["name" => "Kaeser Compressor", "value" => $U_10],
                 ["name" => "Dryer", "value" => $U_11],
                 ["name" => "Solar Hostels", "value" => $U_12]
@@ -363,8 +363,8 @@ function fetchData($start_date, $end_date)
             "litres" => (int)$count3,
             "color" => "#e67f22", // Red color
             "subData" => [
-                ["name" => "Solar 1", "value" => $S_1],
-                ["name" => "Solar 2", "value" => $S_2],
+                ["name" => "Solar SPNG", "value" => $S_1],
+                ["name" => "Solar SWNG", "value" => $S_2],
             ]
         ],
     ];

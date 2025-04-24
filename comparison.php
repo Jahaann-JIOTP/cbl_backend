@@ -34,7 +34,7 @@ if ($httpCode == 200) {
 curl_close($ch);
 
 // Database connection
-$con = mysqli_connect("localhost", "root", "", "gcl");
+$con = mysqli_connect("65.0.16.20", "root", "", "gcl");
 
 // Check if the database connection is successful
 if ($con) {

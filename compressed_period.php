@@ -120,6 +120,64 @@ function fetchWeekly($monthStart,$monthEnd, $tag_values,$numberOfMeters){
   $docs = $cursor->toArray();
   return $docs;
 }
+function fetchYearlyWaterConsumption($tag_values) {
+  $db = connectDB();
+  $collection = $db->CBL_b;
+
+  $currentYear = intval(date('Y'));
+  $previousYear = $currentYear - 1;
+
+  $cursor = $collection->aggregate([
+      ['$project' => [
+          'UNIXtimestamp' => 1,
+          'year' => ['$year' => ['$add' => [['$toDate' => ['$multiply' => ['$UNIXtimestamp', 1000]]], 18000000]]],
+          'month' => ['$month' => ['$add' => [['$toDate' => ['$multiply' => ['$UNIXtimestamp', 1000]]], 18000000]]],
+          'u1' => '$' . $tag_values[0],
+      ]],
+      ['$match' => ['year' => ['$in' => [$currentYear, $previousYear]]]],
+      ['$group' => [
+          '_id' => ['year' => '$year', 'month' => '$month'],
+          'firstRead1' => ['$first' => '$u1'],
+          'lastRead1' => ['$last' => '$u1'],
+      ]],
+      ['$project' => [
+          '_id' => 1,
+          'total_consumption' => ['$subtract' => ['$lastRead1', '$firstRead1']],
+      ]],
+      ['$sort' => ['_id.year' => 1, '_id.month' => 1]]
+  ]);
+
+  $docs = $cursor->toArray();
+  $yearData = [];
+
+  // Initialize array to store monthly data (ensures months without data show as 0)
+  for ($i = 1; $i <= 12; $i++) {
+      $yearData[$i] = [
+          'Month' => date('M', mktime(0, 0, 0, $i, 1)),
+          'Previous Year' => 0,
+          'Current Year' => 0
+      ];
+  }
+
+  // Assign data from MongoDB results
+  foreach ($docs as $document) {
+      $month = $document['_id']['month'];
+      $year = $document['_id']['year'];
+      $total_consumption = $document['total_consumption'];
+
+      // Convert flow to cubic meters (assuming it's in liters or another unit)
+      $total_consumption_m3 = $total_consumption; 
+
+      if ($year == $previousYear) {
+          $yearData[$month]['Previous Year'] = max(0, $total_consumption_m3); // Ensure no negative values
+      } elseif ($year == $currentYear) {
+          $yearData[$month]['Current Year'] = max(0, $total_consumption_m3);
+      }
+  }
+
+  return array_values($yearData); // Convert associative array to indexed array for JSON output
+}
+
 function fetchDayWise($date, $tag_values, $numberOfMeters, $value){
   $db = connectDB();
   $collection = $db->CBL_b;
@@ -250,7 +308,10 @@ if ($value=='today') {
     }
   }
   
+} elseif ($value == 'year') {
+  $array = fetchYearlyWaterConsumption($tag_values);
 }
+
 elseif ($value=='month') {
   $m1= date('n', strtotime($current_date));
   $y1= date('Y', strtotime($current_date));
@@ -392,8 +453,8 @@ elseif ($value == 'week') {
 
     $array[$i] = array(
       'Days' => $dayName,
-      'Last Week' => (($lastWeekData)*1000)/35.31,
-      'This Week' => (($thisWeekData)*1000)/35.31,
+      'Last Week' => $lastWeekData,
+      'This Week' => $thisWeekData,
     );
   }
 }

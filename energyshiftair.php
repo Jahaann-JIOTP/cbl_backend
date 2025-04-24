@@ -28,7 +28,9 @@ function filterOutliers($values)
     }
 
     // Filter out negative values first
-    $values = array_filter($values, fn($value) => $value >= 0);
+    $values = array_filter($values, function($value) {
+        return $value >= 0;
+    });
 
     // Sort values
     sort($values);
@@ -53,7 +55,9 @@ function filterOutliers($values)
     );
 
     // Return filtered values within the bounds
-    return array_filter($values, fn($value) => $value >= $lowerBound && $value <= $upperBound);
+    return array_filter($values, function($value) use ($lowerBound, $upperBound) {
+        return $value >= $lowerBound && $value <= $upperBound;
+    });
 }
 
 

@@ -4,7 +4,7 @@ header("Content-Type: application/json");
 date_default_timezone_set("Asia/Karachi");
 
 // Database connection
-$con = mysqli_connect("15.206.128.214", "jahaann", "Jahaann#321", "cbl_alarms");
+$con = mysqli_connect("65.0.16.20", "root", "", "cbl");
 
 if (!$con) {
     echo json_encode(["error" => "Database connection failed: " . mysqli_connect_error()]);

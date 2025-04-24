@@ -108,7 +108,7 @@ $count6 = $flow_arrays['arr_F6'];
 $count7 = $flow_arrays['arr_F7'];
 
 // Unaccountable energy
-$count8 = $count1 + $count2 + $count4 + $count5 + $count6;
+$count8 = $count1 + $count2 + $count4 + $count5 + $count6 + $count7;
 $count9 = $count3 - $count8;
 
 // Prepare data for JSON

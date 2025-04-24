@@ -20,7 +20,7 @@ function connectDB()
 // MySQL Connection
 function connectMySQL()
 {
-    $servername = "15.206.128.214";
+    $servername = "65.0.16.20";
     $username = "jahaann";
     $password = "Jahaann#321";
     $dbname = "gcl";
@@ -74,8 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['start_date']) && isset(
 
         $data = $collection->aggregate($pipeline)->toArray();
 
-        $filteredData = array_map(function ($document) use ($meterIds, $suffixes) {
+        $filteredData = [];
+        foreach ($data as $document) {
+            $currentDate = (new DateTime($document['timestamp']))->format('Y-m-d');
             $meterData = [];
+
             foreach ($meterIds as $meterId) {
                 foreach ($suffixes as $suffix) {
                     $key = "{$meterId}_{$suffix}";
@@ -84,42 +87,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['start_date']) && isset(
                     }
                 }
             }
-            return ['timestamp' => $document['timestamp'], 'data' => $meterData];
-        }, $data);
+
+            $filteredData[$currentDate][] = ['timestamp' => $document['timestamp'], 'data' => $meterData];
+        }
 
         // Calculate Daily Consumption
         $dailyConsumption = [];
-        $firstValuesByDay = [];
+        foreach ($filteredData as $date => $records) {
+            $firstValidF6 = null;
+            $firstF7 = null;
 
-        foreach ($filteredData as $document) {
-            $currentDate = (new DateTime($document['timestamp']))->format('Y-m-d');
+            // Get valid F6 value for the current date
+            foreach ($records as $record) {
+                $data = $record['data'];
+                if (isset($data['F6_Sewing1_TotalFlow'])) {
+                    if ($firstF7 === null && isset($data['F7_PG_TotalFlow'])) {
+                        $firstF7 = $data['F7_PG_TotalFlow'];
+                    }
 
-            foreach ($meterIds as $meterId) {
-                foreach ($suffixes as $suffix) {
-                    $key = "{$meterId}_{$suffix}";
-                    if (isset($document['data'][$key])) {
-                        if (!isset($firstValuesByDay[$currentDate][$key])) {
-                            $firstValuesByDay[$currentDate][$key] = $document['data'][$key];
+                    if ($firstValidF6 === null) {
+                        // Ignore F6 value if its whole number matches F7
+                        if (floor($data['F6_Sewing1_TotalFlow']) != floor($firstF7)) {
+                            $firstValidF6 = $data['F6_Sewing1_TotalFlow'];
                         }
                     }
                 }
             }
-        }
 
-        $dates = array_keys($firstValuesByDay);
-        for ($i = 0; $i < count($dates) - 1; $i++) {
-            $currentDate = $dates[$i];
-            $nextDate = $dates[$i + 1];
+            $nextDate = (new DateTime($date))->modify('+1 day')->format('Y-m-d');
+            $nextFirstValidF6 = null;
+            $nextFirstF7 = null;
+
+            // Get valid F6 value for the next date
+            if (isset($filteredData[$nextDate])) {
+                foreach ($filteredData[$nextDate] as $record) {
+                    $data = $record['data'];
+                    if (isset($data['F7_PG_TotalFlow']) && $nextFirstF7 === null) {
+                        $nextFirstF7 = $data['F7_PG_TotalFlow'];
+                    }
+
+                    if (isset($data['F6_Sewing1_TotalFlow'])) {
+                        if (floor($data['F6_Sewing1_TotalFlow']) != floor($nextFirstF7)) {
+                            $nextFirstValidF6 = $data['F6_Sewing1_TotalFlow'];
+                            break;
+                        }
+                    }
+                }
+            }
 
             foreach ($meterIds as $meterId) {
                 foreach ($suffixes as $suffix) {
                     $key = "{$meterId}_{$suffix}";
                     $mappedName = array_search($meterId, $meterNameMapping) ?? $meterId;
 
-                    $firstValue = $firstValuesByDay[$currentDate][$key] ?? 0;
-                    $nextFirstValue = $firstValuesByDay[$nextDate][$key] ?? 0;
+                    $firstValue = ($meterId === 'F6_Sewing1' && $firstValidF6 !== null) ? $firstValidF6 : ($filteredData[$date][0]['data'][$key] ?? 0);
+                    $nextFirstValue = ($meterId === 'F6_Sewing1' && $nextFirstValidF6 !== null) ? $nextFirstValidF6 : ($filteredData[$nextDate][0]['data'][$key] ?? 0);
 
-                    $dailyConsumption[$currentDate][$mappedName] = ($nextFirstValue - $firstValue) * 1000 / 35.31;
+                    $dailyConsumption[$date][$mappedName] = ($nextFirstValue - $firstValue) * 1000 / 35.31;
                 }
             }
         }

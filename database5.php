@@ -42,6 +42,66 @@ function GetUNIXday($day){
   }}
   return intval($a);
 }
+function fetchYearlyConsumption($tag_values) {
+  $db = connectDB();
+  $collection = $db->CBL_b;
+
+  $currentYear = intval(date('Y'));
+  $previousYear = $currentYear - 1;
+
+  $cursor = $collection->aggregate([
+      ['$project' => [
+          'UNIXtimestamp' => 1,
+          'year' => ['$year' => ['$add' => [['$toDate' => ['$multiply' => ['$UNIXtimestamp', 1000]]], 18000000]]],
+          'month' => ['$month' => ['$add' => [['$toDate' => ['$multiply' => ['$UNIXtimestamp', 1000]]], 18000000]]],
+          'u1' => '$' . $tag_values[0],
+          'u2' => '$' . $tag_values[1],
+      ]],
+      ['$match' => ['year' => ['$in' => [$currentYear, $previousYear]]]],
+      ['$group' => [
+          '_id' => ['year' => '$year', 'month' => '$month'],
+          'firstRead1' => ['$first' => '$u1'],
+          'lastRead1' => ['$last' => '$u1'],
+          'firstRead2' => ['$first' => '$u2'],
+          'lastRead2' => ['$last' => '$u2'],
+      ]],
+      ['$project' => [
+          '_id' => 1,
+          'total_kWh1' => ['$subtract' => ['$lastRead1', '$firstRead1']],
+          'total_kWh2' => ['$subtract' => ['$lastRead2', '$firstRead2']],
+      ]],
+      ['$sort' => ['_id.year' => 1, '_id.month' => 1]]
+  ]);
+
+  $docs = $cursor->toArray();
+  $yearData = [];
+
+  // Initialize array to store monthly data (ensures months without data show as 0)
+  for ($i = 1; $i <= 12; $i++) {
+      $yearData[$i] = [
+          'Month' => date('M', mktime(0, 0, 0, $i, 1)),
+          'Previous Year (kWh)' => 0,
+          'Current Year (kWh)' => 0
+      ];
+  }
+
+  // Assign data from MongoDB results
+  foreach ($docs as $document) {
+      $month = $document['_id']['month'];
+      $year = $document['_id']['year'];
+      $total_kWh = $document['total_kWh1'] + $document['total_kWh2'];
+
+      if ($year == $previousYear) {
+          $yearData[$month]['Previous Year (kWh)'] = max(0, $total_kWh); // Ensure no negative values
+      } elseif ($year == $currentYear) {
+          $yearData[$month]['Current Year (kWh)'] = max(0, $total_kWh);
+      }
+  }
+
+  return array_values($yearData); // Convert associative array to indexed array for JSON output
+}
+
+
 function fetchHourly($date, $tag_values,$numberOfMeters,$Label){
    $db = connectDB();
   $collection = $db->CBL_b;
@@ -266,6 +326,8 @@ if ($value=='today') {
     }
   }
   
+} elseif ($value == 'year') {
+  $array = fetchYearlyConsumption($tag_values);
 }
 elseif ($value=='month') {
   $m1= date('n', strtotime($current_date));
