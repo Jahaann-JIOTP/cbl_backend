@@ -1,0 +1,11 @@
+{
+    "name": "root/cbl_backend",
+    "require": {
+        "mongodb/mongodb": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Root\\CblBackend\\": "src/"
+        }
+    }
+}
