@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://65.0.16.20:3000"); // Adjust to match your frontend origin
+header("Access-Control-Allow-Origin: http://127.0.0.1:3000"); // Adjust to match your frontend origin
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 

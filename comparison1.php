@@ -44,7 +44,7 @@ if (!$url_data) {
 }
 
 // Database connection
-$con = mysqli_connect("65.0.16.20", "root", "", "cbl");
+$con = mysqli_connect("127.0.0.1", "root", "", "cbl");
 if (!$con) {
     die("Database connection failed: " . mysqli_connect_error());
 }

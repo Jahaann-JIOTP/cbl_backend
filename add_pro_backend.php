@@ -20,7 +20,7 @@ function connectDB()
 // MySQL Connection
 function connectMySQL()
 {
-    $servername = "65.0.16.20";
+    $servername = "127.0.0.1";
     $username = "jahaann";
     $password = "Jahaann#321";
     $dbname = "gcl";

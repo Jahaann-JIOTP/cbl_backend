@@ -4,7 +4,7 @@ header("Access-Control-Allow-Origin: *"); // Allow requests from your frontend's
 header("Access-Control-Allow-Methods: POST, OPTIONS"); // Allow POST and preflight OPTIONS
 header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Allow required headers
 // Database connection settings
-$servername = "65.0.16.20";
+$servername = "127.0.0.1";
     $username = "jahaann";
     $password = "Jahaann#321";
 $dbname = "gcl"; // Replace with your database name

@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Database connection settings
-$servername = "65.0.16.20";
+$servername = "127.0.0.1";
     $username = "jahaann";
     $password = "Jahaann#321";
 $dbname = "gcl";
