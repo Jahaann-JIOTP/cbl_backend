@@ -36,7 +36,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 // Fetch data from the URL
-$url = "http://13.234.241.103:1880/latestcbl";
+$url = "http://43.204.118.114:6881/latestcbl";
 $url_data = fetchUrlData($url);
 
 if (!$url_data) {

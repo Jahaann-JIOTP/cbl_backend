@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 // Your backend logic to fetch data
-$url = "http://13.234.241.103:1880/latestcbl";
+$url = "http://43.204.118.114:6881/latestcbl";
 $json = file_get_contents($url);
 
 if ($json === false) {

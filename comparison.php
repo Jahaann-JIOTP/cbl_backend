@@ -4,7 +4,7 @@ header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Accept, Authorization");
 
 // URL to fetch data
-$url = "http://13.234.241.103:1880/latestnaubahar1";
+$url = "http://43.204.118.114:6881/latestnaubahar1";
 
 // Initialize cURL session
 $ch = curl_init($url);

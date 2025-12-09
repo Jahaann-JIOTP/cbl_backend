@@ -7,8 +7,8 @@ header("Access-Control-Allow-Headers: Content-Type");
 ob_start(); // Start output buffering
 
 // Connect to MongoDB
-$client = new MongoDB\Client("mongodb://admin:cisco123@13.234.241.103:27017/?authSource=iotdb&readPreference=primary&appname=MongoDB%20Compass&ssl=false");
-$collection = $client->iotdb->CBL_b; // Replace 'iotdb' with your actual DB name
+$client = new MongoDB\Client("mongodb://Jamal:rVl8O8iMN@43.204.118.114:57019/CBL?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false");
+$collection = $client->CBL->CBL_b; // Replace 'CBL' with your actual DB name
 
 // Get start and end dates from URL
 $start_date = isset($_GET['start']) ? $_GET['start'] : null;

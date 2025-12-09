@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 function connectDB()
 {
     try {
-        $client = new MongoDB\Client("mongodb://admin:cisco123@13.234.241.103:27017/?authSource=iotdb&readPreference=primary&appname=MongoDB%20Compass&ssl=false");
-        return $client->iotdb;
+        $client = new MongoDB\Client("mongodb://Jamal:rVl8O8iMN@43.204.118.114:57019/CBL?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false");
+        return $client->CBL;
     } catch (Exception $e) {
         echo json_encode(["error" => "Failed to connect to MongoDB: " . $e->getMessage()]);
         exit;
